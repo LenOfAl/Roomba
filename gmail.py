@@ -7,6 +7,7 @@ from google.auth.transport.requests import Request
 
 import os
 os.chdir(os.getcwd()+'/Roomba')
+
 keywords = []
 with open('keywords.txt') as f:
     keywords= [line[:-1] for line in f]
@@ -20,8 +21,8 @@ class Gmail:
         spamMailIds=self.read_mail(mailIds)
         self.delete_messages(spamMailIds)
         print('------------------')
-        print('Scanned {} emais'.format(1000))
-        print('Deleted {} of {}'.format(100,1000))
+        print('Scanned {} emais'.format(len(mailIds)))
+        print('Deleted {} of {}'.format(len(spamMailIds),len(mailIds)))
         print('------------------')
 
     def gmailAuthenticate(self):

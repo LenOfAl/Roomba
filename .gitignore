@@ -1,1 +1,4 @@
 token.pickle
+__pycache__/*
+dist/*
+Roomba.egg-info
