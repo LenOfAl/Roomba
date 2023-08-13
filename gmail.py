@@ -5,11 +5,11 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 
-
+import os
+os.chdir(os.getcwd()+'/Roomba')
 keywords = []
 with open('keywords.txt') as f:
     keywords= [line[:-1] for line in f]
-
 
 SCOPES = ['https://mail.google.com/']
 

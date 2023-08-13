@@ -9,7 +9,7 @@ authors = [
   { name="Ananthan831" },
   { name="LenOfAl" },
 ]
-description = ""
+description = "Roomba"
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [
