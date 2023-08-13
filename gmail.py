@@ -1,9 +1,19 @@
 import os
+import pyfiglet
 import pickle
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
+roomba_text = "ROOMBA"
+font = "slant" 
+ascii_art = pyfiglet.figlet_format(roomba_text, font=font)
+print('*'*60)
+print('*'*60)
+print(ascii_art)
+print('*'*60)
+print('*'*60)
+print("\n"*2)
 if not 'Roomba' in os.getcwd():
     os.chdir(os.getcwd()+'/Roomba')
 
