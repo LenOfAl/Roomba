@@ -7,7 +7,7 @@ from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 import base64
 
-keywords = ["security","lost", "viva", "found", "sale", "ticket", "taxi", "airport", "station", "cab", "purchase", "phd open","snake"]
+keywords = ["application has been dropped","lost", "viva", "found", "sale", "ticket", "taxi", "airport", "station", "cab", "purchase", "phd open","snake"]
 
 # Request all access (permission to read/send/receive emails, manage the inbox, and more)
 SCOPES = ['https://mail.google.com/']
