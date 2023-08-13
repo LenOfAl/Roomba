@@ -21,5 +21,5 @@ Made with **Python**
 
 
 ---
-![Gif](https://i.gifer.com/3rIx.gif)
+![Gif](3rIx.gif)
  
