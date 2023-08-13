@@ -1,8 +1,0 @@
-LICENSE
-README.md
-gmail.py
-pyproject.toml
-Roomba.egg-info/PKG-INFO
-Roomba.egg-info/SOURCES.txt
-Roomba.egg-info/dependency_links.txt
-Roomba.egg-info/top_level.txt
