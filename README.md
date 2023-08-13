@@ -1,6 +1,21 @@
 # Roomba  -  Email spam remover
 Wipes out 99.9% of **SPAM**.
 Made with **Python**
+
+<p align="center">
+  <img src="3rIx.gif" />
+</p>
+
+
+## **Installation Guide**
+```
+git clone https://github.com/LenOfAl/Roomba
+cd Roomba
+pip install requirements.txt
+python __main__.py
+
+```
+
 ## **References**
 
  - [Using gmail api in python](https://www.thepythoncode.com/article/use-gmail-api-in-python)
@@ -20,6 +35,5 @@ Made with **Python**
  - [LenOfAl](https://github.com/LenOfAl)
 
 
----
-![Gif](3rIx.gif)
+
  
