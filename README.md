@@ -11,9 +11,8 @@ Made with **Python**
 ```
 git clone https://github.com/LenOfAl/Roomba
 cd Roomba
-pip install requirements.txt
-python __main__.py
-
+python -m pip install -r requirements.txt
+python _main__.py
 ```
 
 ## **References**
