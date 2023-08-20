@@ -3,7 +3,7 @@ Wipes out 99.9% of **SPAM**.
 Made with **Python**
 
 <p align="center">
-  <img src="3rIx.gif" />
+  <img src="assets/3rIx.gif" />
 </p>
 
 

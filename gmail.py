@@ -1,40 +1,62 @@
+# pylint: skip-file
+
 import os
-import pyfiglet
 import pickle
+import time
+from concurrent.futures import ProcessPoolExecutor
+
+import pyfiglet
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
-roomba_text = "ROOMBA"
-font = "slant" 
-ascii_art = pyfiglet.figlet_format(roomba_text, font=font)
-print('*'*60)
-print('*'*60)
-print(ascii_art)
-print('*'*60)
-print('*'*60)
-print("\n"*2)
-if not 'Roomba' in os.getcwd():
-    os.chdir(os.getcwd()+'/Roomba')
 
-keywords = []
-with open('keywords.txt') as f:
-    keywords= [line[:-1] for line in f]
-
-SCOPES = ['https://mail.google.com/']
+with open('keywords.txt',encoding="utf-8") as f:
+    KEY_WORDS= [line[:-1] for line in f]
 
 class Gmail:
-    def __init__(self):
-        self.service=self.gmailAuthenticate()
-        mailIds=self.search_mails("is:unread")
-        spamMailIds=self.read_mail(mailIds)
-        self.delete_messages(spamMailIds)
+    """
+    Gmail class to authenticate and delete spam emails
+    """
+    def  __init__(self):
+        print('*'*60)
+        print('*'*60)
+        print(pyfiglet.figlet_format("ROOMBA", font="slant"))
+        print('*'*60)
+        print('*'*60)
+        print("\n"*2)
+
+        if not 'Roomba' in os.getcwd():
+            os.chdir(os.getcwd()+'/Roomba')
+        
+        self.service=self.gmail_authenticate()
+        start_time = time.time()
+        mail_ids=self.search_mails("")
+
+        """
+            make mail ids chucnk of 40 and call read_mail function with multithreading
+        """
+        mail_ids_chunks=list(self.mails_to_chunks(mail_ids,40))
+        spam_mail_ids=[]
+        with ProcessPoolExecutor (max_workers=4) as executor:
+            t= executor.map(self.read_mail,mail_ids_chunks)
+            for spams in t:
+                spam_mail_ids.extend(spams)
+        self.delete_messages(spam_mail_ids)
+
         print('------------------')
-        print('Scanned {} emais'.format(len(mailIds)))
-        print('Deleted {} of {}'.format(len(spamMailIds),len(mailIds)))
+        print(f'Scanned {len(mail_ids)} emais')
+        print(f'Deleted {len(spam_mail_ids)} of {len(mail_ids)}')
+        print(f"Total time taken {time.time()-start_time} seconds")
         print('------------------')
 
-    def gmailAuthenticate(self):
+
+    def gmail_authenticate(self):
+        """
+        Authenticate to gmail using OAuth2
+        """
+        scopes = ['https://mail.google.com/']
+
         creds = None
         if os.path.exists("token.pickle"):
             with open("token.pickle", "rb") as token:
@@ -42,9 +64,8 @@ class Gmail:
         if not creds or not creds.valid :
             if creds and creds.expired and creds.refresh_token:
                 creds.refresh(Request())
-                help(creds)
             else:
-                flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+                flow = InstalledAppFlow.from_client_secrets_file('credentials.json', scopes)
                 creds = flow.run_local_server(port = 0)
             
             with open("token.pickle", "wb") as token:
@@ -53,21 +74,28 @@ class Gmail:
 
 
     def search_mails(self,query):
+        """
+        Search for mails in inbox
+        """
         result=self.service.users().messages().list(userId='me').execute()
         messages=[]
         if 'messages' in result:
             messages.extend(result['messages'])
         while 'nextPageToken' in result:
             page_token=result['nextPageToken']
-            result = self.service.users().messages().list(userId='me',q=query,labelIds=['INBOX'], pageToken=page_token).execute()
+            result = self.service.users().messages().list(userId='me',q=query, pageToken=page_token).execute()
             if 'messages' in result:
                 messages.extend(result['messages'])
+        print(f"Found {len(messages)} emails")
         return messages
     
-    def read_mail(self,messagesIds):
+    def read_mail(self,messages_ids):
+        """
+        Read the mail and check if it is spam
+        """
         ids=[]
         message_count=0
-        for message in messagesIds: 
+        for message in messages_ids:
             msg = self.service.users().messages().get(userId='me', id=message['id']).execute()
             message_count= message_count + 1
             email_data= msg['payload']['headers']
@@ -79,26 +107,39 @@ class Gmail:
                         ids.append(email.id)
         return ids
     
-    def delete_messages(self,spamMailIds):
-        return self.service.users().messages().batchDelete(
-            userId='me',
-            body={
-                'ids':spamMailIds
-        }
-            
-        ).execute()
+    def delete_messages(self,spam_mail_ids):
+        """
+        Delete the spam mails
+        """
+        mail_chunks=list(self.mails_to_chunks(spam_mail_ids))
+        for mails in mail_chunks:
+            self.service.users().messages().batchDelete(userId='me',body={'ids':mails}).execute()
+    
+    def mails_to_chunks(self,mails,n=1000):
+        """
+        Split the mails into chunks of 1000
+        """
+        for i in range(0, len(mails), n): 
+            yield mails[i:i + n]
+
 
 class Email:
-    def __init__(self,email_data,from_addr,id) -> None:
+    """
+    Email class to store email data
+    """
+    def __init__(self,email_data,from_addr,email_id) -> None:
         self.subject= [j['value'] for j in email_data if j["name"]=="Subject"]
         self.from_addr=from_addr
-        self.id=id
+        self.id=email_id
     
     def is_spam(self):
-        for s in self.subject:
-            s=s.lower()
-            for keyword in keywords:
-                if keyword in s:
+        """
+        Check if the email is spam
+        """
+        for sub in self.subject:
+            sub=sub.lower()
+            for keyword in KEY_WORDS:
+                if keyword in sub:
                     print(*self.subject,self.from_addr)
                     return True
 
