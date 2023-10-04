@@ -9,6 +9,7 @@ import pyfiglet
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+from datetime import datetime
 
 
 with open('keywords.txt',encoding="utf-8") as f:
@@ -43,13 +44,21 @@ class Gmail:
             for spams in t:
                 spam_mail_ids.extend(spams)
         self.delete_messages(spam_mail_ids)
-
+        date=(datetime.now())
+        logtime=f"\n{date.hour}:{date.minute}:{date.second} {date.day}/{date.month}/{date.year}"
+        print(logtime)
+        with open('log.txt', 'a') as f:
+            f.write(logtime)
+        f.close()
+               
         print('------------------')
         print(f'Scanned {len(mail_ids)} emais')
         print(f'Deleted {len(spam_mail_ids)} of {len(mail_ids)}')
         print(f"Total time taken {time.time()-start_time} seconds")
+        print(f"Time of excecution {logtime}")
         print('------------------')
-
+        
+	
 
     def gmail_authenticate(self):
         """
