@@ -1,4 +1,4 @@
-# Roomba  -  Email spam remover
+# Roomba  -  Gmail spam remover
 Wipes out 99.9% of **SPAM**.
 Made with **Python**
 
